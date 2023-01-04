@@ -1,0 +1,41 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: taoAPI-gateway
+  redis:
+    cluster:
+      nodes:
+        - 192.168.5.128:6387
+        - 192.168.5.128:6388
+        - 192.168.5.128:6389
+        - 192.168.5.128:6397
+        - 192.168.5.128:6398
+        - 192.168.5.128:6399
+  cloud:
+    gateway:
+      routes:
+        - id: w_api_route
+          uri: http://localhost:8123
+          predicates:
+            - Path=/api/w/**
+
+dubbo:
+  application:
+    name: taoAPI-gateway
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    id: nacos-gaetway
+    address: nacos://81.68.65.206:8848?namespace=7da0574d-304a-4c50-94d4-a93bd5bd09ef
+    group: servers
+
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        cloud:
+#          gateway: trace
+#

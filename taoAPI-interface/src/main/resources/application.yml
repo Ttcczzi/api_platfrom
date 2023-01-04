@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: taoAPI-interface
+
+server:
+  port: 8123
+  servlet:
+    context-path: /api/w
+taoapi:
+  client:
+    access-key: wtacx
+    secret-key: wtacx
+
