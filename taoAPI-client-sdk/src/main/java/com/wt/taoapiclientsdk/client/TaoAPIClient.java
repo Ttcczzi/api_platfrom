@@ -3,12 +3,11 @@ package com.wt.taoapiclientsdk.client;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
+import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONUtil;
-import com.wt.taoapiclientsdk.model.User;
-import com.wt.taoapiclientsdk.request.CommonRequest;
-import com.wt.taoapiclientsdk.request.RestfulRequest;
-import com.wt.taoapiclientsdk.response.CommonResult;
+import com.wt.request.CommonRequest;
+import com.wt.request.RestfulRequest;
+import com.wt.response.CommonResult;
 import com.wt.taoapiclientsdk.utils.SignUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,9 +42,7 @@ public class TaoAPIClient {
                 .addHeaders(getHeaderMap(requestParams.toString()))
                 .addHeaders(request.getRequestHeaders())
                 .execute();
-        String body = response.body();
-        CommonResult result = JSONUtil.toBean(body, CommonResult.class);
-        return result;
+        return getResult(response);
     }
 
     public CommonResult post(CommonRequest request){
@@ -57,9 +54,7 @@ public class TaoAPIClient {
                 .addHeaders(getHeaderMap(requestParams.toString()))
                 .addHeaders(request.getRequestHeaders())
                 .execute();
-        String body = response.body();
-        CommonResult result = JSONUtil.toBean(body, CommonResult.class);
-        return result;
+        return getResult(response);
     }
 
     public CommonResult restfulPost(RestfulRequest request){
@@ -71,10 +66,22 @@ public class TaoAPIClient {
                 .addHeaders(request.getRequestHeaders())
                 .body(requestParams)
                 .execute();
-        String body = httpResponse.body();
+        return getResult(httpResponse);
+    }
+
+    public CommonResult getResult(HttpResponse response){
+        if(response.getStatus() != HttpStatus.HTTP_OK){
+            String body = response.body();
+            CommonResult result = new CommonResult();
+            result.setMessage(body);
+            return result;
+        }
+        String body = response.body();
         CommonResult result = JSONUtil.toBean(body, CommonResult.class);
         return result;
     }
+
+
 
 
     private Map<String,String> getHeaderMap(String body){
