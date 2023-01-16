@@ -10,5 +10,4 @@ import javax.annotation.Resource;
 @SpringBootTest
 class TaoApiInterfaceApplicationTests {
 
-
 }

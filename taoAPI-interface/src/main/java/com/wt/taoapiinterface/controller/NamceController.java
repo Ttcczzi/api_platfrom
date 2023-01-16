@@ -2,8 +2,8 @@ package com.wt.taoapiinterface.controller;
 
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
-import com.wt.taoapiinterface.model.User;
-import com.wt.taoapiinterface.response.CommonResult;
+import com.wt.model.User;
+import com.wt.response.CommonResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
