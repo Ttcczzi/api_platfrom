@@ -1,5 +1,5 @@
 package com.wt.project.service;
 
-public interface DemoService {
+public interface DubboDemoService {
     String sayHello(String name);
 }
