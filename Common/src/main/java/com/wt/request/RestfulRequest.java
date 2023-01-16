@@ -1,4 +1,4 @@
-package com.wt.taoapiclientsdk.request;
+package com.wt.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

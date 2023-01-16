@@ -1,4 +1,4 @@
-package com.wt.taoapiinterface.model;
+package com.wt.model;
 
 import lombok.Data;
 

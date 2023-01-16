@@ -1,4 +1,4 @@
-package com.wt.project.constant;
+package com.wt.constant;
 
 /**
  * @author xcx
