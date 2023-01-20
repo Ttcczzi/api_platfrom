@@ -1,24 +1,25 @@
 package com.wt.backend.service.impl;
 
+
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wt.backend.common.ErrorCode;
-import com.wt.constant.UserConstant;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.UserMapper;
-import com.wt.backend.model.entity.User;
 import com.wt.backend.service.api.UserService;
+import com.wt.constant.UserConstant;
+import com.wt.mysqlmodel.model.entity.User;
 import com.wt.project.service.DubboUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 
 /**
  * 用户服务实现类

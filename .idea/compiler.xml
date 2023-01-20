@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Services" />
+        <module name="test" />
+        <module name="MysqlModel" />
+        <module name="taoAPI-interface" />
+        <module name="taoAPI-backend" />
+        <module name="taoAPI-gateway" />
+        <module name="taoAPI-client-sdk" />
+        <module name="Common" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Common" target="1.8" />
+      <module name="MysqlModel" target="1.8" />
+      <module name="Services" target="1.8" />
+      <module name="taoAPI-backend" target="1.8" />
+      <module name="taoAPI-client-sdk" target="1.8" />
+      <module name="taoAPI-gateway" target="1.8" />
+      <module name="taoAPI-interface" target="1.8" />
+      <module name="test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Common" options="-parameters" />
+      <module name="MysqlModel" options="-parameters" />
+      <module name="Services" options="-parameters" />
+      <module name="taoAPI-backend" options="-parameters" />
+      <module name="taoAPI-client-sdk" options="-parameters" />
+      <module name="taoAPI-gateway" options="-parameters" />
+      <module name="taoAPI-interface" options="-parameters" />
+      <module name="test" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,7 +1,7 @@
 package com.wt.backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wt.backend.model.entity.InterfaceInfo;
+import com.wt.mysqlmodel.model.entity.InterfaceInfo;
 import org.apache.ibatis.annotations.Mapper;
 
 

@@ -1,8 +1,8 @@
 package com.wt.backend.service.api;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wt.backend.model.entity.Post;
-import javafx.geometry.Pos;
+import com.wt.mysqlmodel.model.entity.Post;
+
 
 /**
  * @author yupili

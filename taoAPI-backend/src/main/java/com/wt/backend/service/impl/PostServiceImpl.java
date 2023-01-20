@@ -8,9 +8,9 @@ import com.wt.backend.service.api.PostService;
 import com.wt.backend.common.ErrorCode;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.PostMapper;
-import com.wt.backend.model.entity.Post;
-import com.wt.backend.model.enums.PostGenderEnum;
-import com.wt.backend.model.enums.PostReviewStatusEnum;
+import com.wt.mysqlmodel.model.entity.Post;
+import com.wt.mysqlmodel.model.enums.PostGenderEnum;
+import com.wt.mysqlmodel.model.enums.PostReviewStatusEnum;
 import com.wt.project.service.DubboPostService;
 import org.springframework.stereotype.Service;
 

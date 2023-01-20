@@ -2,16 +2,17 @@ package com.wt.backend.service;
 
 import cn.hutool.json.JSONUtil;
 import com.wt.backend.service.api.UserInterfaceInfoService;
-import com.wt.backend.model.entity.User;
 import com.wt.backend.service.api.UserService;
+import com.wt.mysqlmodel.model.entity.User;
+import com.wt.request.CommonRequest;
+import com.wt.request.RestfulRequest;
 import com.wt.taoapiclientsdk.client.TaoAPIClient;
-import com.wt.taoapiclientsdk.request.CommonRequest;
-import com.wt.taoapiclientsdk.request.RestfulRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 
 /**
  * 用户服务测试
@@ -31,10 +32,12 @@ class UserServiceTest {
 
     @Test
     void tests(){
-        User one = userService.query().select("secretKey")
-                .eq("accessKey", "wtacx")
-                .eq("userName", "wt").one();
-        System.out.println(one);
+        CommonRequest request = new CommonRequest();
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("te","te");
+        request.setRequestParams(hashMap);
+        request.setUrl("http://localhost:8090/api/t/test");
+        System.out.println(taoAPIClient.get(request));
     }
 
     @Test

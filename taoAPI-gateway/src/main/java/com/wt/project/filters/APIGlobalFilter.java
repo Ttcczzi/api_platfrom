@@ -3,10 +3,12 @@ package com.wt.project.filters;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
+import com.wt.constant.RedisConstant;
 import com.wt.project.TaoApiGatewayApplication;
 import com.wt.project.config.RedisConfig;
-import com.wt.project.constant.RedisConstant;
 import com.wt.project.constants.AuthStatus;
+import com.wt.project.controller.WBCacheController;
+import com.wt.response.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -26,6 +28,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -41,10 +44,22 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    private static final Set<String> IP_WHITE_SET = new HashSet<>();
 
-    static {
-        IP_WHITE_SET.add("127.0.0.1");
+    private Set<String> WBSet;
+    public Set<String> getWBSet() {
+        return WBSet;
+    }
+
+    //todo 将白黑名单的内容交给redis管理，方便更新
+    @PostConstruct
+    public void init(){
+        loadWBList();
+    }
+
+    public void loadWBList(){
+        WBSet =
+                stringRedisTemplate.opsForSet().members(RedisConstant.CACE_WB_USERS);
+        log.info("黑白名单信息：{}", WBSet);
     }
 
     @Override
@@ -61,12 +76,13 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         String sourceAddress = request.getRemoteAddress().getHostString();
         log.info("请求来源: {}",sourceAddress);
 
+        CommonResult commonResult = new CommonResult();
         ServerHttpResponse response = exchange.getResponse();
         //2. 黑白名单
-        if(!IP_WHITE_SET.contains(sourceAddress)){
+        if(!WBSet.contains(sourceAddress)){
             log.error("黑名单请求 {}", sourceAddress);
             response.setStatusCode(HttpStatus.FORBIDDEN);
-            return response.setComplete();
+            return handleError(response,"黑名单请求");
         }
         //3. 用户鉴权
         HttpHeaders headers = request.getHeaders();
@@ -75,27 +91,35 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         if(status == AuthStatus.NOAUTH){
             log.error("用户无权限 {}",userId);
             response.setStatusCode(HttpStatus.FORBIDDEN);
-            return response.setComplete();
+            return handleError(response,"用户无权限");
         }
         //4. 发布接口就在redis中添加，下线接口就在redis中删除，redis中以key-url-interfaceId存储为hash结构
+        String url = new StringBuilder("http://localhost:8090").append(request.getPath()).toString();
         Object obj = stringRedisTemplate
-                .opsForHash().get(RedisConstant.CACHE_INTEFACE_URL, uri.toString());
+                .opsForHash().get(RedisConstant.CACHE_INTEFACE_URL, url);
         long interfaceId = 0L;
         if(ObjectUtil.isNull(obj) || (interfaceId = Long.parseLong(obj.toString())) <= 0){
-            log.error("接口不存在 {}", uri);
+            log.error("接口不存在 {} {}", uri, url);
             response.setStatusCode(HttpStatus.BAD_REQUEST);
-            return response.setComplete();
+            return handleError(response,"接口不存在");
         }
         //5. 取数据库判断用户剩余调用次数是否大于0
         int leftNum = TaoApiGatewayApplication
-                .application.userInterfaceInfoService.getLeftNum(userId, interfaceId);
+                .application.dubboUserInterfaceInfoService.getLeftNum(userId, interfaceId);
         if(leftNum <= 0){
             log.error("用户调用次数已用完 userId:{} interfaceId:{}",userId, interfaceId);
             response.setStatusCode(HttpStatus.BAD_REQUEST);
-            return response.setComplete();
+            return handleError(response,"用户调用次数已用完");
         }
         //6. 处理响应结果
        return handlerResponse(exchange,chain,interfaceId,userId);
+    }
+
+    public Mono<Void> handleError(ServerHttpResponse response, String msg){
+        byte[] bytes = msg.toString().getBytes(StandardCharsets.UTF_8);
+        DataBuffer buffer = response.bufferFactory().wrap(bytes);
+        response.getHeaders().add("Content-Type","application/text;charset=UTF-8");
+        return response.writeWith(Mono.just(buffer));
     }
 
     public Mono<Void> handlerResponse(ServerWebExchange exchange, GatewayFilterChain chain, Long interfaceId, Long uesrId) {
@@ -122,7 +146,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                 if(resStatus == HttpStatus.OK){
                                     //2. 调用成功，剩余次数 +1 todo 远程调用backend接口
                                     TaoApiGatewayApplication
-                                            .application.userInterfaceInfoService.invokeInterface(uesrId,interfaceId);
+                                            .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
                                 }
                                 log.info("<--- {} {},",data,resStatus);//log.info("<-- {} {}",data, resStatus);
                                 return bufferFactory.wrap(content);
@@ -149,32 +173,43 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
 
     //用户鉴权
     private int uesrCheck(HttpHeaders headers){
+        //用户ID
         String userId = headers.getFirst("userId");
+        //askey
         String accessKey = headers.getFirst("accessKey");
+        //请求参数
         String body = headers.getFirst("body");
+        //随机数
         String nonce = headers.getFirst("nonce");
+        //请求创建的时间
         String timestamp = headers.getFirst("timestamp");
+        //客户端传过来的校验码
         String sign = headers.getFirst("sign");
+        //转换编码方式
+        byte[] bytes = body.getBytes(StandardCharsets.ISO_8859_1);
+        body = new String(bytes,StandardCharsets.UTF_8);
+
         log.info("{} {} {} {} {} {}", userId,accessKey, body, nonce, timestamp, sign);
-        //todo 校验随机数 nonce 防止重放
+        //1. todo 校验随机数 nonce 防止重放
         String redisKey = RedisConfig.CACHE_NONCE + nonce;
         Boolean aBoolean = stringRedisTemplate.opsForValue().setIfAbsent(redisKey, nonce);
         stringRedisTemplate.expire(redisKey, 5 , TimeUnit.MINUTES);
         if(!aBoolean){
             return AuthStatus.NOAUTH;
         }
-        //todo 校验时间 timestamp 防止重放
+        //2. todo 校验时间 timestamp 防止重放
         long currentTime = System.currentTimeMillis() / 1000;
         long FIVE_MINUTES = 60 * 5L;
         if(currentTime - Long.parseLong(timestamp) >= FIVE_MINUTES){
             return AuthStatus.NOAUTH;
         }
-        //todo 在数据库中查找 secretKey
+        //3. todo 在数据库中查找 secretKey
         String sck = TaoApiGatewayApplication.
-                application.userService.getSekByAckAndUname(accessKey, Long.parseLong(userId));
+                application.dubboUserService.getSekByAckAndUname(accessKey, Long.parseLong(userId));
         if(sck.equals("noUser")){
             return AuthStatus.NOAUTH;
         }
+        //4. todo 生成校验码并与客户端发过来的校验码进行校验
         String rSign = getSign(body + nonce + timestamp, sck);
         if(!rSign.equals(sign)){
             return AuthStatus.NOAUTH;
@@ -182,6 +217,12 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         return AuthStatus.HAVEAUTH;
     }
 
+    /**
+     * 生成校验码
+     * @param body
+     * @param secretKey
+     * @return
+     */
     public String getSign(String body, String secretKey) {
         Digester md5 = new Digester(DigestAlgorithm.SHA256);
         String content = body + "." + secretKey;

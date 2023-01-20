@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
  * @date
  */
 @Data
-@Configuration
 //可以读取配置
 @ConfigurationProperties("taoapi.client")
+@Configuration
 @ComponentScan
 public class TaoAPIClientConfig {
     private String accessKey;

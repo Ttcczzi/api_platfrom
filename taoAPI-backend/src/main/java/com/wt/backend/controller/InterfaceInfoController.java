@@ -8,15 +8,16 @@ import com.wt.backend.common.*;
 import com.wt.constant.CommonConstant;
 import com.wt.constant.RedisConstant;
 import com.wt.backend.exception.BusinessException;
-import com.wt.backend.model.dto.interfaceinfo.InterfaceInfoAddRequest;
-import com.wt.backend.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
-import com.wt.backend.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
-import com.wt.backend.model.dto.interfaceinfo.InterfaceInvokeRequest;
-import com.wt.backend.model.entity.InterfaceInfo;
-import com.wt.backend.model.entity.User;
-import com.wt.backend.model.enums.InterfaceInfoStatusEnum;
 import com.wt.backend.service.api.InterfaceInfoService;
 import com.wt.backend.service.api.UserService;
+import com.wt.mysqlmodel.model.dto.DeleteRequest;
+import com.wt.mysqlmodel.model.dto.interfaceinfo.InterfaceInfoAddRequest;
+import com.wt.mysqlmodel.model.dto.interfaceinfo.InterfaceInfoQueryRequest;
+import com.wt.mysqlmodel.model.dto.interfaceinfo.InterfaceInfoUpdateRequest;
+import com.wt.mysqlmodel.model.dto.interfaceinfo.InterfaceInvokeRequest;
+import com.wt.mysqlmodel.model.entity.InterfaceInfo;
+import com.wt.mysqlmodel.model.entity.User;
+import com.wt.mysqlmodel.model.enums.InterfaceInfoStatusEnum;
 import com.wt.request.CommonRequest;
 import com.wt.request.RestfulRequest;
 import com.wt.response.CommonResult;
@@ -101,6 +102,11 @@ public class InterfaceInfoController {
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        //若删除已经上线的接口
+        if(oldInterfaceInfo.getStatus() == 1){
+            String url = oldInterfaceInfo.getUrl();
+            stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url);
+        }
         // 仅本人或管理员可删除
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
@@ -133,6 +139,15 @@ public class InterfaceInfoController {
         if (oldInterfaceInfo == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
+        String url = interfaceInfoUpdateRequest.getUrl();
+        String oldUrl = oldInterfaceInfo.getUrl();
+        //若更新已经上线接口的url
+        if(StringUtils.isNotBlank(url)
+                && url.equals(oldUrl)
+                && oldInterfaceInfo.getStatus() == 1){
+            stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, oldUrl);
+            stringRedisTemplate.opsForHash().put(RedisConstant.CACHE_INTEFACE_URL, url, interfaceInfo.getId());
+        }
         // 仅本人或管理员可修改
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
@@ -162,7 +177,7 @@ public class InterfaceInfoController {
      * @param interfaceInfoQueryRequest
      * @return
      */
-    @AuthCheck(mustRole = "admin")
+    @AuthCheck(mustRole = "ACX")
     @GetMapping("/list")
     public BaseResponse<List<InterfaceInfo>> listInterfaceInfo(InterfaceInfoQueryRequest interfaceInfoQueryRequest) {
         InterfaceInfo interfaceInfoQuery = new InterfaceInfo();
@@ -181,6 +196,7 @@ public class InterfaceInfoController {
      * @param request
      * @return
      */
+    @AuthCheck(mustRole = "ACX")
     @GetMapping("/list/page")
     public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(InterfaceInfoQueryRequest interfaceInfoQueryRequest, HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null) {
@@ -222,12 +238,6 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
 
-//        com.wt.taoapiclientsdk.model.User user = new com.wt.taoapiclientsdk.model.User();
-//        user.setName("wt");
-//        String postResult = taoAPIClient.getUsernameByPost(user);
-//        if(StringUtils.isBlank(postResult)){
-//            throw new BusinessException(ErrorCode.SYSTEM_ERROR,"接口验证失败");
-//        }
         InterfaceInfo interfaceInfo = new InterfaceInfo();
         interfaceInfo.setId(id);
         interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());

@@ -1,7 +1,8 @@
 package com.wt.backend.service.api;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wt.backend.model.entity.UserInterfaceInfo;
+import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
+
 
 /**
 * @author TAO111

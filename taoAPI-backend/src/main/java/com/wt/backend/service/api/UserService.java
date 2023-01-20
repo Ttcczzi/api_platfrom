@@ -1,7 +1,8 @@
 package com.wt.backend.service.api;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wt.backend.model.entity.User;
+import com.wt.mysqlmodel.model.entity.User;
+
 
 import javax.servlet.http.HttpServletRequest;
 

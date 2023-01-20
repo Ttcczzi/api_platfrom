@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Common/Common.iml" filepath="$PROJECT_DIR$/Common/Common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MysqlModel/MysqlModel.iml" filepath="$PROJECT_DIR$/MysqlModel/MysqlModel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Services/Services.iml" filepath="$PROJECT_DIR$/Services/Services.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tao-api.iml" filepath="$PROJECT_DIR$/.idea/tao-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/taoAPI-backend/taoAPI-backend.iml" filepath="$PROJECT_DIR$/taoAPI-backend/taoAPI-backend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/taoAPI-client-sdk/taoAPI-client-sdk.iml" filepath="$PROJECT_DIR$/taoAPI-client-sdk/taoAPI-client-sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/taoAPI-gateway/taoAPI-gateway.iml" filepath="$PROJECT_DIR$/taoAPI-gateway/taoAPI-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/taoAPI-interface/taoAPI-interface.iml" filepath="$PROJECT_DIR$/taoAPI-interface/taoAPI-interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
+    </modules>
+  </component>
+</project>

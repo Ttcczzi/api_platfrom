@@ -6,8 +6,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wt.backend.common.ErrorCode;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.InterfaceInfoMapper;
-import com.wt.backend.model.entity.InterfaceInfo;
+
 import com.wt.backend.service.api.InterfaceInfoService;
+import com.wt.mysqlmodel.model.entity.InterfaceInfo;
 import com.wt.project.service.DubboInterfaceInfoService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.stereotype.Service;

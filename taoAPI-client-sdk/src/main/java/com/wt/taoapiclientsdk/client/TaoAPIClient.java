@@ -88,7 +88,7 @@ public class TaoAPIClient {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("userId", String.valueOf(userId));
         hashMap.put("accessKey", accessKey);
-        String nonce = RandomUtil.randomNumbers(4);
+        String nonce = RandomUtil.randomNumbers(4) + System.currentTimeMillis() % 1000000;
         hashMap.put("nonce", nonce);
         String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
         hashMap.put("timestamp", timestamp);

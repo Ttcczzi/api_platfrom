@@ -1,11 +1,11 @@
 package com.wt.project;
 
-import com.wt.project.service.DemoService;
-import com.wt.project.service.InterfaceInfoService;
-import com.wt.project.service.UserInterfaceInfoService;
-import com.wt.project.service.UserService;
+
+import com.wt.project.service.DubboDemoService;
+import com.wt.project.service.DubboInterfaceInfoService;
+import com.wt.project.service.DubboUserInterfaceInfoService;
+import com.wt.project.service.DubboUserService;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.dubbo.config.annotation.Service;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,16 +16,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class TaoApiGatewayApplication {
 
     @DubboReference
-    public DemoService demoService;
+    public DubboDemoService demoService;
+    @DubboReference
+    public DubboUserService dubboUserService;
 
     @DubboReference
-    public UserService userService;
+    public DubboInterfaceInfoService dubboInterfaceInfoService;
 
     @DubboReference
-    public InterfaceInfoService interfaceInfoService;
-
-    @DubboReference
-    public UserInterfaceInfoService userInterfaceInfoService;
+    public DubboUserInterfaceInfoService dubboUserInterfaceInfoService;
 
     public static TaoApiGatewayApplication application;
 

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  * 查询名称
  */
 @RestController
-@RequestMapping("/getName")
+@RequestMapping("/w/getName")
 public class NamceController {
     @GetMapping("/")
     public CommonResult getNameByGet(String name){

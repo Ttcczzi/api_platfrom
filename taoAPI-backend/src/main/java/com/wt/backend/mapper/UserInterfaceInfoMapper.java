@@ -1,7 +1,10 @@
 package com.wt.backend.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wt.backend.model.entity.UserInterfaceInfo;
+import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author TAO111
@@ -11,6 +14,7 @@ import com.wt.backend.model.entity.UserInterfaceInfo;
 */
 public interface UserInterfaceInfoMapper extends BaseMapper<UserInterfaceInfo> {
 
+    public List<UserInterfaceInfo> interfaceInfoInvoked(@Param("limit") int limit);
 }
 
 

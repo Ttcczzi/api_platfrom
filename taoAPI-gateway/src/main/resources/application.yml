@@ -1,6 +1,13 @@
 server:
   port: 8090
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.5.128:3306/taoAPI?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+  main:
+    web-application-type: reactive
   application:
     name: taoAPI-gateway
   redis:
@@ -12,13 +19,13 @@ spring:
         - 192.168.5.128:6397
         - 192.168.5.128:6398
         - 192.168.5.128:6399
-  cloud:
-    gateway:
-      routes:
-        - id: w_api_route
-          uri: http://localhost:8123
-          predicates:
-            - Path=/api/w/**
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: w_api_route
+#          uri: http://localhost:8123
+#          predicates:
+#            - Path=/api/w/**
 
 dubbo:
   application:
@@ -32,10 +39,10 @@ dubbo:
     group: servers
 
 
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        cloud:
-#          gateway: trace
-#
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+

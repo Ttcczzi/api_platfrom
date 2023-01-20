@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/taoAPI-backend/pom.xml" />
+        <option value="$PROJECT_DIR$/taoAPI-client-sdk/pom.xml" />
+        <option value="$PROJECT_DIR$/taoAPI-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/taoAPI-interface/pom.xml" />
+        <option value="$PROJECT_DIR$/Services/pom.xml" />
+        <option value="$PROJECT_DIR$/Common/pom.xml" />
+        <option value="$PROJECT_DIR$/test/pom.xml" />
+        <option value="$PROJECT_DIR$/MysqlModal/pom.xml" />
+        <option value="$PROJECT_DIR$/MysqlModel/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="corretto-1.8" project-jdk-type="JavaSDK" />
+</project>

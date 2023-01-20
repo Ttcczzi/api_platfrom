@@ -5,7 +5,7 @@ import com.wt.backend.annotation.AuthCheck;
 import com.wt.backend.common.ErrorCode;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.service.api.UserService;
-import com.wt.backend.model.entity.User;
+import com.wt.mysqlmodel.model.entity.User;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
