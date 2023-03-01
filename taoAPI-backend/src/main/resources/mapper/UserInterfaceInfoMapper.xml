@@ -5,19 +5,20 @@
 <mapper namespace="com.wt.backend.mapper.UserInterfaceInfoMapper">
 
     <resultMap id="BaseResultMap" type="com.wt.mysqlmodel.model.entity.UserInterfaceInfo">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="userId" column="userId" jdbcType="BIGINT"/>
-            <result property="interfaceInfoId" column="interfaceInfoId" jdbcType="BIGINT"/>
-            <result property="totalNum" column="totalNum" jdbcType="VARCHAR"/>
-            <result property="leftNum" column="leftNum" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="interfaceInfoId" column="interfaceInfoId" jdbcType="BIGINT"/>
+        <result property="totalNum" column="totalNum" jdbcType="VARCHAR"/>
+        <result property="leftNum" column="leftNum" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+        <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,interfaceInfoId,
+        id
+        ,userId,interfaceInfoId,
         totalNum,leftNum,status,
         createTime,updateTime,isDelete
     </sql>
@@ -27,6 +28,14 @@
         group by interfaceInfoId
         order by totalNum desc
             limit #{limit}
+    </select>
+    <select id="getInterfaceInfoByUserId" resultType="com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO">
+        select name as interfacName, info2.totalNum, info2.leftNum, info2.status
+        from interface_info info1,
+             (select interfaceInfoId, totalNum, leftNum, status
+              from user_interface_info
+              where userId = 1) info2
+        where id = info2.interfaceInfoId
     </select>
 
 </mapper>

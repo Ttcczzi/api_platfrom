@@ -9,12 +9,14 @@ import com.wt.constant.RedisConstant;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.UserInterfaceInfoMapper;
 import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
+import com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO;
 import com.wt.project.service.DubboUserInterfaceInfoService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author TAO111
@@ -28,6 +30,9 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add) {
@@ -81,6 +86,10 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         res.setStatus(1);
         this.save(res);
         return res.getLeftNum();
+    }
+
+    public List<UserInterfaceInfoVO> getInterfaceInfoByUserId(long userId){
+        return userInterfaceInfoMapper.getInterfaceInfoByUserId(userId);
     }
 }
 

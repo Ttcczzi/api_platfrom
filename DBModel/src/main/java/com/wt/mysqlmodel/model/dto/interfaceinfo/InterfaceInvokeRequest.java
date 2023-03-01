@@ -19,7 +19,6 @@ public class InterfaceInvokeRequest implements Serializable {
 
     private String requestParams;
 
-
     private Map queryParams;
 
     private static final long serialVersionUID = 1L;

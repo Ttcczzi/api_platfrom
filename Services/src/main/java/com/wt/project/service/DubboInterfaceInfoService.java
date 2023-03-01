@@ -8,6 +8,7 @@ package com.wt.project.service;
 * @createDate 2022-12-31 19:01:10
 */
 public interface DubboInterfaceInfoService {
-
     Long existInterface(String url);
+
+    public boolean offline(long id);
 }

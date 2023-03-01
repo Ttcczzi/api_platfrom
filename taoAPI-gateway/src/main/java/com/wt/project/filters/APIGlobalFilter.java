@@ -5,6 +5,7 @@ import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import com.wt.constant.RedisConstant;
 import com.wt.project.TaoApiGatewayApplication;
+import com.wt.project.common.ErrorInterface;
 import com.wt.project.config.RedisConfig;
 import com.wt.project.constants.AuthStatus;
 import com.wt.project.controller.WBCacheController;
@@ -32,7 +33,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -44,8 +47,8 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-
     private Set<String> WBSet;
+
     public Set<String> getWBSet() {
         return WBSet;
     }
@@ -101,7 +104,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         if(ObjectUtil.isNull(obj) || (interfaceId = Long.parseLong(obj.toString())) <= 0){
             log.error("接口不存在 {} {}", uri, url);
             response.setStatusCode(HttpStatus.BAD_REQUEST);
-            return handleError(response,"接口不存在");
+            return handleError(response,"接口不存在或已经下线");
         }
         //5. 取数据库判断用户剩余调用次数是否大于0
         int leftNum = TaoApiGatewayApplication
@@ -111,6 +114,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
             response.setStatusCode(HttpStatus.BAD_REQUEST);
             return handleError(response,"用户调用次数已用完");
         }
+
         //6. 处理响应结果
        return handlerResponse(exchange,chain,interfaceId,userId);
     }
@@ -147,6 +151,17 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                     //2. 调用成功，剩余次数 +1 todo 远程调用backend接口
                                     TaoApiGatewayApplication
                                             .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
+                                }else{
+                                    log.error("服务端发生异常，状态码为：{}", resStatus);
+                                    int count = ErrorInterface.getErrorNums(interfaceId);
+                                    ErrorInterface.addErrorNums(interfaceId);
+                                    //若失败次数连续超过 10，强制下线 todo 动态修改数值
+                                    if(count >= 10){
+                                        TaoApiGatewayApplication.application.dubboInterfaceInfoService.offline(interfaceId);
+                                        ErrorInterface.clearErrorNums(interfaceId);
+                                    }
+                                    data = "服务端发生异常，请稍后再试";
+                                    content = data.getBytes(StandardCharsets.UTF_8);
                                 }
                                 log.info("<--- {} {},",data,resStatus);//log.info("<-- {} {}",data, resStatus);
                                 return bufferFactory.wrap(content);

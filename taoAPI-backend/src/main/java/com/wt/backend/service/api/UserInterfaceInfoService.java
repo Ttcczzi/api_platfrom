@@ -2,6 +2,9 @@ package com.wt.backend.service.api;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
+import com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO;
+
+import java.util.List;
 
 
 /**
@@ -13,4 +16,5 @@ public interface UserInterfaceInfoService extends IService<UserInterfaceInfo>{
 
     void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean b);
 
+    public List<UserInterfaceInfoVO> getInterfaceInfoByUserId(long userId);
 }

@@ -143,7 +143,7 @@ public class InterfaceInfoController {
         String oldUrl = oldInterfaceInfo.getUrl();
         //若更新已经上线接口的url
         if(StringUtils.isNotBlank(url)
-                && url.equals(oldUrl)
+                && !url.equals(oldUrl)
                 && oldInterfaceInfo.getStatus() == 1){
             stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, oldUrl);
             stringRedisTemplate.opsForHash().put(RedisConstant.CACHE_INTEFACE_URL, url, interfaceInfo.getId());
@@ -268,30 +268,32 @@ public class InterfaceInfoController {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         long id = idRequest.getId();
-        //判断是否存在
-        InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
-        if(oldInterfaceinfo == null){
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
+        boolean result = interfaceInfoService.offlineInterface(id);
 
-        InterfaceInfo interfaceInfo = new InterfaceInfo();
-        interfaceInfo.setId(id);
-        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
-        boolean update = interfaceInfoService.updateById(interfaceInfo);
-        if(update){
-            //todo 在redis添加接口url redisKey-url-接口id
-            InterfaceInfo url = interfaceInfoService.query().select("url").eq("id", id).one();
-            Long delete = stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url.getUrl());
-            if(delete > 0){
-                return ResultUtils.success(update);
-            }else{
-                log.error("redis服务异常 接口下线失败，接口id：{}", id);
-                ResultUtils.error(ErrorCode.SYSTEM_ERROR,"下线失败");
-            }
-        }
-
-        log.error("mysql服务异常 接口下线失败，接口id：{}", id);
-        return ResultUtils.success(update);
+//        //判断是否存在
+//        InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
+//        if(oldInterfaceinfo == null){
+//            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+//        }
+//
+//        InterfaceInfo interfaceInfo = new InterfaceInfo();
+//        interfaceInfo.setId(id);
+//        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+//        boolean update = interfaceInfoService.updateById(interfaceInfo);
+//        if(update){
+//            //todo 在redis添加接口url redisKey-url-接口id
+//            InterfaceInfo url = interfaceInfoService.query().select("url").eq("id", id).one();
+//            Long delete = stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url.getUrl());
+//            if(delete > 0){
+//                return ResultUtils.success(update);
+//            }else{
+//                log.error("redis服务异常 接口下线失败，接口id：{}", id);
+//                ResultUtils.error(ErrorCode.SYSTEM_ERROR,"下线失败");
+//            }
+//        }
+//
+//        log.error("mysql服务异常 接口下线失败，接口id：{}", id);
+        return ResultUtils.success(result);
     }
 
     @PostMapping("/ionvoke")

@@ -12,6 +12,8 @@
         <option value="$PROJECT_DIR$/test/pom.xml" />
         <option value="$PROJECT_DIR$/MysqlModal/pom.xml" />
         <option value="$PROJECT_DIR$/MysqlModel/pom.xml" />
+        <option value="$PROJECT_DIR$/DBModel/pom.xml" />
+        <option value="$PROJECT_DIR$/../taoAPI-QRCode-sdk/pom.xml" />
       </list>
     </option>
   </component>

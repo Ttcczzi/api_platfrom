@@ -16,6 +16,7 @@ import com.wt.mysqlmodel.model.dto.userinterfaceinfo.UserInterfaceInfoQueryReque
 import com.wt.mysqlmodel.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequest;
 import com.wt.mysqlmodel.model.entity.User;
 import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
+import com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO;
 import com.wt.taoapiclientsdk.client.TaoAPIClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +47,7 @@ public class UserInterfaceInfoController {
     private TaoAPIClient taoAPIClient;
 
     // region 增删改查
+
     /**
      * 创建
      *
@@ -59,7 +61,7 @@ public class UserInterfaceInfoController {
         if (UserInterfaceInfoAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        UserInterfaceInfo UserInterfaceInfo =  new UserInterfaceInfo();
+        UserInterfaceInfo UserInterfaceInfo = new UserInterfaceInfo();
         BeanUtils.copyProperties(UserInterfaceInfoAddRequest, UserInterfaceInfo);
         // 校验
         userInterfaceInfoService.validUserInterfaceInfo(UserInterfaceInfo, true);
@@ -107,7 +109,7 @@ public class UserInterfaceInfoController {
     @PostMapping("/update")
     @AuthCheck(mustRole = "ACX")
     public BaseResponse<Boolean> updateUserInterfaceInfo(@RequestBody UserInterfaceInfoUpdateRequest UserInterfaceInfoUpdateRequest,
-                                            HttpServletRequest request) {
+                                                         HttpServletRequest request) {
         if (UserInterfaceInfoUpdateRequest == null || UserInterfaceInfoUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -127,19 +129,20 @@ public class UserInterfaceInfoController {
     }
 
     /**
-     * 根据 id 获取
      *
-     * @param id
      * @return
      */
     @GetMapping("/get")
-    public BaseResponse<UserInterfaceInfo> getUserInterfaceInfoById(long id) {
-        if (id <= 0) {
+    public BaseResponse<List<UserInterfaceInfoVO>> getUserInterfaceInfo(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        if (loginUser == null || loginUser.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        UserInterfaceInfo UserInterfaceInfo = userInterfaceInfoService.getById(id);
-        return ResultUtils.success(UserInterfaceInfo);
+        List<UserInterfaceInfoVO> userInterfaceInfoVOList =
+                userInterfaceInfoService.getInterfaceInfoByUserId(loginUser.getId());
+        return ResultUtils.success(userInterfaceInfoVOList);
     }
+
 
     /**
      * 获取列表（仅管理员可使用）

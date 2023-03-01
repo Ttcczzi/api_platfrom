@@ -4,14 +4,20 @@ import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.nacos.common.utils.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wt.backend.common.ErrorCode;
+import com.wt.backend.common.ResultUtils;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.InterfaceInfoMapper;
-
 import com.wt.backend.service.api.InterfaceInfoService;
+import com.wt.constant.RedisConstant;
 import com.wt.mysqlmodel.model.entity.InterfaceInfo;
+import com.wt.mysqlmodel.model.enums.InterfaceInfoStatusEnum;
 import com.wt.project.service.DubboInterfaceInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
 * @author TAO111
@@ -20,8 +26,11 @@ import org.springframework.stereotype.Service;
 */
 @DubboService(interfaceClass = DubboInterfaceInfoService.class)
 @Service
+@Slf4j
 public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, InterfaceInfo>
         implements InterfaceInfoService, DubboInterfaceInfoService {
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
@@ -52,6 +61,38 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
             return -1L;
         }
         return res.getId();
+    }
+
+    @Override
+    public boolean offline(long id) {
+        return offlineInterface(id);
+    }
+
+    @Override
+    public boolean offlineInterface(long id) {
+        InterfaceInfo oldInterfaceinfo = this.getById(id);
+        if(oldInterfaceinfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean update = this.updateById(interfaceInfo);
+        if(update){
+            //todo 在redis添加接口url redisKey-url-接口id
+            InterfaceInfo url = this.query().select("url").eq("id", id).one();
+            Long delete = stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url.getUrl());
+            if(delete > 0){
+                return true;
+            }else{
+                log.error("redis服务异常 接口下线失败，接口id：{}", id);
+                ResultUtils.error(ErrorCode.SYSTEM_ERROR,"下线失败");
+            }
+        }
+
+        log.error("mysql服务异常 接口下线失败，接口id：{}", id);
+        return false;
     }
 
 }

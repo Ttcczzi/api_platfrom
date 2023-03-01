@@ -82,8 +82,6 @@ public class TaoAPIClient {
     }
 
 
-
-
     private Map<String,String> getHeaderMap(String body){
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("userId", String.valueOf(userId));

@@ -1,18 +1,22 @@
 package com.wt.mysqlmodel.model.dto.interfaceinfo;
 
-
+import com.wt.mysqlmodel.model.dto.PageRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * 创建请求
+ * 查询请求
  *
- * @TableName product
+ * @author yupi
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfoAddRequest implements Serializable {
+public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
+
+    private Long id;
+
     /**
      * 接口名
      */
@@ -22,12 +26,6 @@ public class InterfaceInfoAddRequest implements Serializable {
      * 接口地址
      */
     private String url;
-
-
-    /**
-     * 请求参数
-     */
-    private String requestParams;
 
     /**
      * 请求头
@@ -45,8 +43,20 @@ public class InterfaceInfoAddRequest implements Serializable {
     private String description;
 
     /**
+     * 接口状态
+     */
+    private Integer status;
+
+
+    /**
      * 请求类型
      */
     private String method;
 
+    /**
+     * 创建人
+     */
+    private Long userId;
+
+    private String returnType;
 }

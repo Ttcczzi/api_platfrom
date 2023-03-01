@@ -1,22 +1,20 @@
 package com.wt.mysqlmodel.model.dto.interfaceinfo;
 
-import com.wt.mysqlmodel.model.dto.PageRequest;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * 查询请求
+ * 更新请求
  *
- * @author yupi
+ * @TableName product
  */
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
-
+public class InterfaceInfoUpdateRequest implements Serializable {
     private Long id;
-
     /**
      * 接口名
      */
@@ -26,6 +24,12 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      * 接口地址
      */
     private String url;
+
+
+    /**
+     * 请求参数
+     */
+    private String requestParams;
 
     /**
      * 请求头
@@ -53,10 +57,5 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      */
     private String method;
 
-    /**
-     * 创建人
-     */
-    private Long userId;
-
-
+    private String returnType;
 }

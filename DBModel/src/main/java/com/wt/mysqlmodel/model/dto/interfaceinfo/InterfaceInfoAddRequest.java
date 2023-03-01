@@ -1,23 +1,22 @@
 package com.wt.mysqlmodel.model.dto.interfaceinfo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 更新请求
+ * 创建请求
  *
  * @TableName product
  */
 @Data
-public class InterfaceInfoUpdateRequest implements Serializable {
-    private Long id;
+public class InterfaceInfoAddRequest implements Serializable {
     /**
      * 接口名
      */
+
     private String name;
 
     /**
@@ -47,14 +46,9 @@ public class InterfaceInfoUpdateRequest implements Serializable {
     private String description;
 
     /**
-     * 接口状态
-     */
-    private Integer status;
-
-
-    /**
      * 请求类型
      */
     private String method;
 
+    private String returnType;
 }

@@ -1,12 +1,5 @@
 package com.wt.backend.controller;
 
-
-/**
- * 帖子接口
- *
- * @author yupi
- */
-
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wt.backend.common.BaseResponse;

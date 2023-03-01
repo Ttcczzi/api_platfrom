@@ -4,6 +4,7 @@
     <file url="file://E:/Maven_3.6.3/maven_prve/org/springframework/boot/spring-boot-starter-parent/2.7.0/src/main/resources" charset="UTF-8" />
     <file url="file://E:/Maven_3.6.3/maven_prve/org/springframework/boot/spring-boot-starter-parent/2.7.6/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/DBModel/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/MysqlModel/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Services/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/taoAPI-backend/src/main/java" charset="UTF-8" />
@@ -11,5 +12,6 @@
     <file url="file://$PROJECT_DIR$/taoAPI-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/taoAPI-interface/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../taoAPI-QRCode-sdk/src/main/java" charset="UTF-8" />
   </component>
 </project>

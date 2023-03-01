@@ -82,6 +82,8 @@ public class InterfaceInfo implements Serializable {
      */
     protected Long userId;
 
+    protected String returnType;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

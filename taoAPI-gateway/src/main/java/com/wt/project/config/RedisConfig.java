@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class RedisConfig {
     public static final String CACHE_NONCE = "cache:nonce:";
     //读写分离
-    @Bean
-    public LettuceClientConfigurationBuilderCustomizer clientConfigurationBuilderCustomizer(){
-        return clientConfigurationBuilder -> clientConfigurationBuilder.readFrom(ReadFrom.REPLICA_PREFERRED);
-    }
+//    @Bean
+//    public LettuceClientConfigurationBuilderCustomizer clientConfigurationBuilderCustomizer(){
+//        return clientConfigurationBuilder -> clientConfigurationBuilder.readFrom(ReadFrom.REPLICA_PREFERRED);
+//    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -36,6 +37,9 @@ public class QrCodeController {
             commonResult.setData("参数不正确");
             return commonResult;
         }
+        if(name.equals("wt")){
+            throw new RuntimeException();
+        }
 
         QrCode qrCode = QrCode.codeText(content);
         BufferedImage img = QrCodeToImg.toImage(qrCode, 10, 4);
@@ -56,15 +60,15 @@ public class QrCodeController {
             }
             byteBuffer.clear();
         }
-//        byte[] bytes =  new byte[res.size()];
-//        for(int i = 0; i < res.size(); i++){
-//            bytes[i] = res.get(i);
-//        }
-//        response.setCharacterEncoding("UTF-8");
-//        response.setContentType("image/png;charset=utf-8");
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        outputStream.write(bytes);
-//        outputStream.close();
+        /*byte[] bytes =  new byte[res.size()];
+        for(int i = 0; i < res.size(); i++){
+            bytes[i] = res.get(i);
+        }
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("image/png;charset=utf-8");
+        ServletOutputStream outputStream = response.getOutputStream();
+        outputStream.write(bytes);
+        outputStream.close();*/
 
         return CommonResult.success(res, 1, "png");
     }

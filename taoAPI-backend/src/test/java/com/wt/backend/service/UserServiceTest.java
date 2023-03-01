@@ -7,6 +7,7 @@ import com.wt.mysqlmodel.model.entity.User;
 import com.wt.request.CommonRequest;
 import com.wt.request.RestfulRequest;
 import com.wt.taoapiclientsdk.client.TaoAPIClient;
+import javafx.util.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +68,7 @@ class UserServiceTest {
 
     @Test
     void testGetUser() {
+
         User user = userService.getById(1L);
         Assertions.assertNotNull(user);
     }

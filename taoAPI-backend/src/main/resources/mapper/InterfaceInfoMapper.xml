@@ -24,6 +24,6 @@
         id,name,url,requestParams,
         requestHeader,responseHeader,description,
         status,isDelete,createTime,
-        updateTime,method,userId
+        updateTime,method,userId,returnType
     </sql>
 </mapper>
