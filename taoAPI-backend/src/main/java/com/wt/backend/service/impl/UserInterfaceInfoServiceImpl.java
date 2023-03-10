@@ -68,16 +68,26 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         Long count = stringRedisTemplate.opsForSet().add(redisKey, String.valueOf(useId));
         if (count <= 0) {
             //不是第一次调用，在数据库查找剩余调用次数
-            res = this.query().select("leftNum")
-                    .eq("userId", useId)
-                    .eq("interfaceInfoId", interfaceId)
-                    .eq("status", 1)
-                    .one();
+            try{
+                //可能有sql异常
+                res = this.query().select("leftNum")
+                        .eq("userId", useId)
+                        .eq("interfaceInfoId", interfaceId)
+                        .eq("status", 1)
+                        .one();
+            }catch (Exception e){
+                log.error(e.getMessage());
+
+                return -100;
+            }
+
             if (ObjectUtil.isNull(res)) {
                 return 0;
             }
             return res.getLeftNum();
         }
+        //到这说明redis没有缓存，应该是第一次调用
+        //todo 以防万一，去数据库检查
         res = new UserInterfaceInfo();
         res.setUserId(useId);
         res.setInterfaceInfoId(interfaceId);

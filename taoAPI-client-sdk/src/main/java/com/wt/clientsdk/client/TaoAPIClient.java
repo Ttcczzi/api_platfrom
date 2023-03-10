@@ -1,4 +1,4 @@
-package com.wt.taoapiclientsdk.client;
+package com.wt.clientsdk.client;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpRequest;
@@ -8,7 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.wt.request.CommonRequest;
 import com.wt.request.RestfulRequest;
 import com.wt.response.CommonResult;
-import com.wt.taoapiclientsdk.utils.SignUtil;
+import com.wt.clientsdk.utils.SignUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;

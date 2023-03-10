@@ -1,5 +1,6 @@
 package com.wt.taoapiinterface.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
 import com.wt.model.User;
@@ -26,6 +27,9 @@ public class NamceController {
     }
     @PostMapping("/user")
     public CommonResult getUsernameByPost(@RequestBody User user, HttpServletRequest request){
+        if(ObjectUtil.isNull(user)){
+            throw new RuntimeException("参数错误");
+        }
         return CommonResult.success("你的用户名是" + user.getName());
     }
 }

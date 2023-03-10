@@ -74,7 +74,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         log.info("请求方法: {}",request.getMethod());
         log.info("请求参数: {}",request.getQueryParams());
         log.info("请求体: {}",request.getBody());
-        URI uri = request.getURI();
+        String uri = request.getURI().toString();
         log.info("请求RUL: {}",uri);
         String sourceAddress = request.getRemoteAddress().getHostString();
         log.info("请求来源: {}",sourceAddress);
@@ -82,7 +82,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         CommonResult commonResult = new CommonResult();
         ServerHttpResponse response = exchange.getResponse();
         //2. 黑白名单
-        if(!WBSet.contains(sourceAddress)){
+        if(!(WBSet.contains(sourceAddress) || WBSet.contains("**")) ){
             log.error("黑名单请求 {}", sourceAddress);
             response.setStatusCode(HttpStatus.FORBIDDEN);
             return handleError(response,"黑名单请求");
@@ -97,19 +97,29 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
             return handleError(response,"用户无权限");
         }
         //4. 发布接口就在redis中添加，下线接口就在redis中删除，redis中以key-url-interfaceId存储为hash结构
-        String url = new StringBuilder("http://localhost:8090").append(request.getPath()).toString();
+        int index = uri.lastIndexOf('?');
+        if(index != -1){
+            uri = uri.substring(0 , index);
+        }
+        //String url = new StringBuilder("http://localhost:8090").append(request.getPath()).toString();
         Object obj = stringRedisTemplate
-                .opsForHash().get(RedisConstant.CACHE_INTEFACE_URL, url);
+                .opsForHash().get(RedisConstant.CACHE_INTEFACE_URL, uri);
         long interfaceId = 0L;
         if(ObjectUtil.isNull(obj) || (interfaceId = Long.parseLong(obj.toString())) <= 0){
-            log.error("接口不存在 {} {}", uri, url);
+            log.error("接口不存在 {} ",  uri);
             response.setStatusCode(HttpStatus.BAD_REQUEST);
             return handleError(response,"接口不存在或已经下线");
         }
+
+
         //5. 取数据库判断用户剩余调用次数是否大于0
         int leftNum = TaoApiGatewayApplication
                 .application.dubboUserInterfaceInfoService.getLeftNum(userId, interfaceId);
         if(leftNum <= 0){
+            if(leftNum == -100){
+                //todo sql异常
+                return handleError(response,"系统异常");
+            }
             log.error("用户调用次数已用完 userId:{} interfaceId:{}",userId, interfaceId);
             response.setStatusCode(HttpStatus.BAD_REQUEST);
             return handleError(response,"用户调用次数已用完");
@@ -153,6 +163,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                             .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
                                 }else{
                                     log.error("服务端发生异常，状态码为：{}", resStatus);
+
                                     int count = ErrorInterface.getErrorNums(interfaceId);
                                     ErrorInterface.addErrorNums(interfaceId);
                                     //若失败次数连续超过 10，强制下线 todo 动态修改数值
@@ -163,6 +174,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                     data = "服务端发生异常，请稍后再试";
                                     content = data.getBytes(StandardCharsets.UTF_8);
                                 }
+
                                 log.info("<--- {} {},",data,resStatus);//log.info("<-- {} {}",data, resStatus);
                                 return bufferFactory.wrap(content);
                             }));

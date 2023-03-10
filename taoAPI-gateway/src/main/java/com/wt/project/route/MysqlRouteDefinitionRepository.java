@@ -1,11 +1,9 @@
 package com.wt.project.route;
 
 import com.wt.mysqlmodel.model.entity.Route;
-import com.wt.project.filters.RequetLimitFilter;
 import com.wt.project.mapper.RouteMapper;
 import com.wt.mysqlmodel.model.vo.DBRouteDefination;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.event.RefreshRoutesEvent;
 import org.springframework.cloud.gateway.filter.FilterDefinition;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
@@ -22,7 +20,6 @@ import javax.annotation.Resource;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,6 +49,7 @@ public class MysqlRouteDefinitionRepository implements RouteDefinitionRepository
         filterDefinition.addArg("redis-rate-limiter.replenishRate", "1");
         //桶的最大令牌容量
         filterDefinition.addArg("redis-rate-limiter.burstCapacity", "2");
+
         filterDefinitions.add(filterDefinition);
     }
 

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wt.backend.common.BaseResponse;
 import com.wt.backend.common.ErrorCode;
+import com.wt.backend.common.GateWayConstant;
 import com.wt.backend.common.ResultUtils;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.RouteMapper;
@@ -42,6 +43,7 @@ public class RouteCacheController {
     @Resource
     private RouteMapper routeMapper;
 
+
     @PostMapping("/add")
     public BaseResponse<String> addCache(@RequestBody RouteAddRequest request){
         if(request == null){
@@ -69,7 +71,7 @@ public class RouteCacheController {
         //todo 通知GateWay重新加载路由
         String res = "error";
         if(save){
-            res = restTemplate.getForObject("http://localhost:8090/route/refrash", String.class);
+            res = restTemplate.getForObject(GateWayConstant.GATEWAYIP, String.class);
         }
         return ResultUtils.success(res);
     }
@@ -91,7 +93,7 @@ public class RouteCacheController {
         //todo 通知GateWay重新加载路由
         String res = "error";
         if(update){
-            res = restTemplate.getForObject("http://localhost:8090/route/refrash", String.class);
+            res = restTemplate.getForObject(GateWayConstant.GATEWAYIP, String.class);
         }
         return ResultUtils.success(res);
     }
@@ -101,7 +103,7 @@ public class RouteCacheController {
         int i = routeMapper.deleteById(request.getId());
         String res = "error";
         if(i > 0){
-            res = restTemplate.getForObject("http://localhost:8090/route/refrash", String.class);
+            res = restTemplate.getForObject(GateWayConstant.GATEWAYIP, String.class);
         }
         return ResultUtils.success("删除成功，" + res);
     }

@@ -14,10 +14,11 @@ import java.sql.SQLException;
 @Slf4j
 public class GlobalExceptionHandler {
 
+
     @ExceptionHandler(ConnectException.class)
     public String connectExceptionHandler(ConnectException e){
+
         log.error(e.getMessage());
-        System.out.println("=========================");
         return "服务器连接异常";
     }
 }

@@ -3,7 +3,9 @@ package com.wt.taoapiinterface.controller;
 import com.wt.QrCode;
 import com.wt.QrCodeToImg;
 import com.wt.response.CommonResult;
+import com.wt.taoapiinterface.exception.ArgException;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,24 +28,32 @@ import java.util.ArrayList;
  */
 @RestController
 @RequestMapping("/w/qrCode")
+@Slf4j
 public class QrCodeController {
-    String path = "X:\\QrCodeCache\\";
+
+    String path = "/home/jars/taoAPI/QrCodeCache/";
+    //String path = "X:\\QrCodeCache\\";
 
     @GetMapping("/")
-    public CommonResult getQrCode(String name, String content, HttpServletResponse response) throws IOException {
+    public CommonResult getQrCode(String name, String content, HttpServletResponse response) throws Exception {
         if (!StringUtils.hasText(name) || !StringUtils.hasText(content)) {
-            CommonResult commonResult = new CommonResult();
-            commonResult.setCode(555);
-            commonResult.setData("参数不正确");
-            return commonResult;
+            throw new ArgException("参数错误");
         }
-        if(name.equals("wt")){
-            throw new RuntimeException();
-        }
+
 
         QrCode qrCode = QrCode.codeText(content);
         BufferedImage img = QrCodeToImg.toImage(qrCode, 10, 4);
         File imgFile = new File(path, name + ".png");   // File path for output
+        if (!imgFile.getParentFile().exists()) {
+            imgFile.getParentFile().mkdirs();
+        }
+        if(!imgFile.exists()) {
+            imgFile.createNewFile();
+        }
+
+        log.info(imgFile.getAbsolutePath());
+
+        imgFile.setWritable(true, false);
         ImageIO.write(img, "png", imgFile);
 
         FileInputStream fileInputStream = new FileInputStream(imgFile);
@@ -60,6 +70,7 @@ public class QrCodeController {
             }
             byteBuffer.clear();
         }
+
         /*byte[] bytes =  new byte[res.size()];
         for(int i = 0; i < res.size(); i++){
             bytes[i] = res.get(i);

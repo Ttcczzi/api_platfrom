@@ -1,10 +1,12 @@
 package com.wt.backend.controller;
 
 
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wt.backend.annotation.AuthCheck;
 import com.wt.backend.common.*;
+import com.wt.clientsdk.client.TaoAPIClient;
 import com.wt.constant.CommonConstant;
 import com.wt.constant.RedisConstant;
 import com.wt.backend.exception.BusinessException;
@@ -21,7 +23,6 @@ import com.wt.mysqlmodel.model.enums.InterfaceInfoStatusEnum;
 import com.wt.request.CommonRequest;
 import com.wt.request.RestfulRequest;
 import com.wt.response.CommonResult;
-import com.wt.taoapiclientsdk.client.TaoAPIClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.common.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +33,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -53,6 +55,7 @@ public class InterfaceInfoController {
     @Resource
     private TaoAPIClient taoAPIClient;
 
+
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
@@ -73,8 +76,12 @@ public class InterfaceInfoController {
         BeanUtils.copyProperties(interfaceInfoAddRequest, interfaceInfo);
         // 校验
         interfaceInfoService.validInterfaceInfo(interfaceInfo, true);
+
+
         User loginUser = userService.getLoginUser(request);
         interfaceInfo.setUserId(loginUser.getId());
+
+
         boolean result = interfaceInfoService.save(interfaceInfo);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -146,7 +153,7 @@ public class InterfaceInfoController {
                 && !url.equals(oldUrl)
                 && oldInterfaceInfo.getStatus() == 1){
             stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, oldUrl);
-            stringRedisTemplate.opsForHash().put(RedisConstant.CACHE_INTEFACE_URL, url, interfaceInfo.getId());
+            stringRedisTemplate.opsForHash().put(RedisConstant.CACHE_INTEFACE_URL, url, String.valueOf(interfaceInfo.getId()));
         }
         // 仅本人或管理员可修改
         if (!oldInterfaceInfo.getUserId().equals(user.getId()) && !userService.isAdmin(request)) {
@@ -270,29 +277,29 @@ public class InterfaceInfoController {
         long id = idRequest.getId();
         boolean result = interfaceInfoService.offlineInterface(id);
 
-//        //判断是否存在
-//        InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
-//        if(oldInterfaceinfo == null){
-//            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-//        }
-//
-//        InterfaceInfo interfaceInfo = new InterfaceInfo();
-//        interfaceInfo.setId(id);
-//        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
-//        boolean update = interfaceInfoService.updateById(interfaceInfo);
-//        if(update){
-//            //todo 在redis添加接口url redisKey-url-接口id
-//            InterfaceInfo url = interfaceInfoService.query().select("url").eq("id", id).one();
-//            Long delete = stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url.getUrl());
-//            if(delete > 0){
-//                return ResultUtils.success(update);
-//            }else{
-//                log.error("redis服务异常 接口下线失败，接口id：{}", id);
-//                ResultUtils.error(ErrorCode.SYSTEM_ERROR,"下线失败");
-//            }
-//        }
-//
-//        log.error("mysql服务异常 接口下线失败，接口id：{}", id);
+        //判断是否存在
+        InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
+        if(oldInterfaceinfo == null){
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+        }
+
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean update = interfaceInfoService.updateById(interfaceInfo);
+        if(update){
+            //todo 在redis添加接口url redisKey-url-接口id
+            InterfaceInfo url = interfaceInfoService.query().select("url").eq("id", id).one();
+            Long delete = stringRedisTemplate.opsForHash().delete(RedisConstant.CACHE_INTEFACE_URL, url.getUrl());
+            if(delete > 0){
+                return ResultUtils.success(update);
+            }else{
+                log.error("redis服务异常 接口下线失败，接口id：{}", id);
+                ResultUtils.error(ErrorCode.SYSTEM_ERROR,"下线失败");
+            }
+        }
+
+        log.error("mysql服务异常 接口下线失败，接口id：{}", id);
         return ResultUtils.success(result);
     }
 
@@ -305,6 +312,9 @@ public class InterfaceInfoController {
         long id = interfaceInvokeRequest.getId();
         //判断是否存在
         InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
+
+
+
         if(oldInterfaceinfo == null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -316,12 +326,17 @@ public class InterfaceInfoController {
         CommonResult result = null;
         if("Post".equals(oldInterfaceinfo.getMethod())){
             RestfulRequest restfulRequest = new RestfulRequest();
+
+
             restfulRequest.setUrl(oldInterfaceinfo.getUrl());
             restfulRequest.setRequestParams(interfaceInvokeRequest.getRequestParams());
             TaoAPIClient taoAPIClient = new TaoAPIClient(accessKey, secretKey, loginUser.getId());
             result = taoAPIClient.restfulPost(restfulRequest);
+
         }else if("Get".equals(oldInterfaceinfo.getMethod())){
             CommonRequest commonRequest = new CommonRequest();
+
+
             commonRequest.setUrl(oldInterfaceinfo.getUrl());
             commonRequest.setRequestParams(interfaceInvokeRequest.getQueryParams());
             TaoAPIClient taoAPIClient = new TaoAPIClient(accessKey, secretKey, loginUser.getId());

@@ -10,4 +10,6 @@ taoapi:
   client:
     access-key: wtacx
     secret-key: wtacx
-
+logging:
+  file:
+    name: /home/jars/taoAPI/logs/interface.log

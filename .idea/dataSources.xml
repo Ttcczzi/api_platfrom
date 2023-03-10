@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:mysql://192.168.5.128:3306/taoAPI</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="taoapi@sh-cdb-mf5lif48.sql.tencentcdb.com" uuid="1eb15ad5-8438-471a-abff-ac509ce62c34">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://sh-cdb-mf5lif48.sql.tencentcdb.com:63782/taoapi?useSSL=false&amp;serverTimezone=UTC</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

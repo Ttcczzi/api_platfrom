@@ -1,4 +1,4 @@
-package com.wt.taoapiclientsdk.utils;
+package com.wt.clientsdk.utils;
 
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;

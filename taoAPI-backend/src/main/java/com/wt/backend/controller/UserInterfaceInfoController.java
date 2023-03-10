@@ -17,7 +17,7 @@ import com.wt.mysqlmodel.model.dto.userinterfaceinfo.UserInterfaceInfoUpdateRequ
 import com.wt.mysqlmodel.model.entity.User;
 import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
 import com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO;
-import com.wt.taoapiclientsdk.client.TaoAPIClient;
+import com.wt.clientsdk.client.TaoAPIClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;

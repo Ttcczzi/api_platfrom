@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class RedisConfig {
     public static final String CACHE_NONCE = "cache:nonce:";
     //读写分离

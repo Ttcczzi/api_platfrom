@@ -8,6 +8,7 @@ import java.util.Map;
  * @date
  */
 public class ErrorInterface {
+    //todo 想一个好的策略
     private static Map<Long,Integer> errorInterfaceMap = new HashMap<>();
 
     public static int getErrorNums(Long interfaceId){
