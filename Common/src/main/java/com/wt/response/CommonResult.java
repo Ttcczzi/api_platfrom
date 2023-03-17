@@ -14,11 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommonResult {
-    //接口调用是否成功
     int code;
 
     public Object data;
-
     int isImg;
     String imgFormat;
 

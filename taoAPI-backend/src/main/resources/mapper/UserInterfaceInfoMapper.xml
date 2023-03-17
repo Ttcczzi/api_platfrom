@@ -34,7 +34,7 @@
         from interface_info info1,
              (select interfaceInfoId, totalNum, leftNum, status
               from user_interface_info
-              where userId = 1) info2
+              where userId = #{userId}) info2
         where id = info2.interfaceInfoId
     </select>
 

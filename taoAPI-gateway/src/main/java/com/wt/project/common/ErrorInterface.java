@@ -2,6 +2,7 @@ package com.wt.project.common;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author xcx
@@ -9,7 +10,7 @@ import java.util.Map;
  */
 public class ErrorInterface {
     //todo 想一个好的策略
-    private static Map<Long,Integer> errorInterfaceMap = new HashMap<>();
+    private static ConcurrentHashMap<Long,Integer> errorInterfaceMap = new ConcurrentHashMap<>();
 
     public static int getErrorNums(Long interfaceId){
         return errorInterfaceMap.getOrDefault(interfaceId, 0);

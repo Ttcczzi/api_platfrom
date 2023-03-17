@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.stereotype.Component;
 
-@Component
+
 public class MyCorsFilter implements Filter {
 
     public void doFilter(ServletRequest req, ServletResponse res,

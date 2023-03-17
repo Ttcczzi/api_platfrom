@@ -48,11 +48,11 @@ taoapi:
     secret-key: wtacx
     uesr-id: '1'
 
-
 dubbo:
   application:
-    logging:
+    logger: slf4j
     name: taoAPI-backend
+    qosAcceptForeignIp: true
   protocol:
     name: dubbo
     port: -1

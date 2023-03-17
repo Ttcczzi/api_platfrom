@@ -3,12 +3,14 @@ package com.wt.project.filters;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.crypto.digest.DigestAlgorithm;
 import cn.hutool.crypto.digest.Digester;
+import cn.hutool.json.JSONUtil;
 import com.wt.constant.RedisConstant;
 import com.wt.project.TaoApiGatewayApplication;
 import com.wt.project.common.ErrorInterface;
 import com.wt.project.config.RedisConfig;
 import com.wt.project.constants.AuthStatus;
 import com.wt.project.controller.WBCacheController;
+import com.wt.project.threadpool.ThreadPool;
 import com.wt.response.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -111,7 +113,6 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
             return handleError(response,"接口不存在或已经下线");
         }
 
-
         //5. 取数据库判断用户剩余调用次数是否大于0
         int leftNum = TaoApiGatewayApplication
                 .application.dubboUserInterfaceInfoService.getLeftNum(userId, interfaceId);
@@ -152,30 +153,33 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
                                 DataBufferUtils.release(dataBuffer);//释放掉内存
-                                //todo 判断接口是否调用成功
+
                                 //1. 获得返回值
                                 String data = new String(content, StandardCharsets.UTF_8);//data
                                 // 构建日志
                                 HttpStatus resStatus = originalResponse.getStatusCode();
                                 if(resStatus == HttpStatus.OK){
-                                    //2. 调用成功，剩余次数 +1 todo 远程调用backend接口
+                                    //2. 调用成功，剩余次数 +1
                                     TaoApiGatewayApplication
                                             .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
                                 }else{
                                     log.error("服务端发生异常，状态码为：{}", resStatus);
 
-                                    int count = ErrorInterface.getErrorNums(interfaceId);
-                                    ErrorInterface.addErrorNums(interfaceId);
-                                    //若失败次数连续超过 10，强制下线 todo 动态修改数值
-                                    if(count >= 10){
-                                        TaoApiGatewayApplication.application.dubboInterfaceInfoService.offline(interfaceId);
-                                        ErrorInterface.clearErrorNums(interfaceId);
-                                    }
-                                    data = "服务端发生异常，请稍后再试";
-                                    content = data.getBytes(StandardCharsets.UTF_8);
+                                    content =  remoteSystemErrorHandler(interfaceId);
+
+                                    return bufferFactory.wrap(content);
                                 }
 
-                                log.info("<--- {} {},",data,resStatus);//log.info("<-- {} {}",data, resStatus);
+                                try{
+                                    CommonResult commonResult = JSONUtil.toBean(data, CommonResult.class);
+                                }catch (Exception e){
+                                    CommonResult commonResult = new CommonResult();
+                                    commonResult.setCode(200);
+                                    commonResult.setData(data);
+                                    content = JSONUtil.toJsonStr(commonResult).getBytes(StandardCharsets.UTF_8);
+                                }
+
+                                log.info("<--- {} {},",data,resStatus);
                                 return bufferFactory.wrap(content);
                             }));
                         } else {
@@ -191,6 +195,24 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
             log.error("gateway log exception.\n" + e);
             return chain.filter(exchange);
         }
+    }
+
+    public byte[] remoteSystemErrorHandler(long interfaceId){
+        int count = ErrorInterface.getErrorNums(interfaceId);
+        ErrorInterface.addErrorNums(interfaceId);
+        //若失败次数连续超过 10，强制下线
+        if(count >= 100){
+            ThreadPool.executor.submit(() -> {
+                TaoApiGatewayApplication.application.dubboInterfaceInfoService.offline(interfaceId);
+                ErrorInterface.clearErrorNums(interfaceId);
+            });
+        }
+        CommonResult commonResult = new CommonResult();
+
+        String msg = "服务端发生异常，请稍后再试";
+        commonResult.setMessage(msg);
+
+        return JSONUtil.toJsonStr(commonResult).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

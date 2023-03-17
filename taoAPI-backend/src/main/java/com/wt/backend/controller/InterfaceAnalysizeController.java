@@ -33,7 +33,7 @@ public class InterfaceAnalysizeController {
     @RequestMapping("/top/interface")
     public BaseResponse<List<InterfaceAnalyiszeVO>> listInterfaceInvoked(){
         List<UserInterfaceInfo> list =
-                userInterfaceInfoMapper.interfaceInfoInvoked(10);
+                userInterfaceInfoMapper.interfaceInfoInvoked(30);
 
         QueryWrapper<InterfaceInfo> wrapper = new QueryWrapper<>();
 

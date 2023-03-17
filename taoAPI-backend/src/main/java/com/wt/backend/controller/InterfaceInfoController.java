@@ -313,8 +313,6 @@ public class InterfaceInfoController {
         //判断是否存在
         InterfaceInfo oldInterfaceinfo = interfaceInfoService.getById(id);
 
-
-
         if(oldInterfaceinfo == null){
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
@@ -327,7 +325,6 @@ public class InterfaceInfoController {
         if("Post".equals(oldInterfaceinfo.getMethod())){
             RestfulRequest restfulRequest = new RestfulRequest();
 
-
             restfulRequest.setUrl(oldInterfaceinfo.getUrl());
             restfulRequest.setRequestParams(interfaceInvokeRequest.getRequestParams());
             TaoAPIClient taoAPIClient = new TaoAPIClient(accessKey, secretKey, loginUser.getId());
@@ -336,12 +333,12 @@ public class InterfaceInfoController {
         }else if("Get".equals(oldInterfaceinfo.getMethod())){
             CommonRequest commonRequest = new CommonRequest();
 
-
             commonRequest.setUrl(oldInterfaceinfo.getUrl());
             commonRequest.setRequestParams(interfaceInvokeRequest.getQueryParams());
             TaoAPIClient taoAPIClient = new TaoAPIClient(accessKey, secretKey, loginUser.getId());
             result = taoAPIClient.get(commonRequest);
         }
+
         if(result == null){
             return ResultUtils.error(ErrorCode.SYSTEM_ERROR);
         }

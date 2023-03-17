@@ -3,11 +3,15 @@ package com.wt.backend.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wt.backend.common.ApplyCallTimesRequest;
+import com.wt.backend.service.api.InterfaceInfoService;
 import com.wt.backend.service.api.UserInterfaceInfoService;
 import com.wt.backend.common.ErrorCode;
 import com.wt.constant.RedisConstant;
 import com.wt.backend.exception.BusinessException;
 import com.wt.backend.mapper.UserInterfaceInfoMapper;
+import com.wt.mysqlmodel.model.entity.InterfaceInfo;
+import com.wt.mysqlmodel.model.entity.User;
 import com.wt.mysqlmodel.model.entity.UserInterfaceInfo;
 import com.wt.mysqlmodel.model.vo.UserInterfaceInfoVO;
 import com.wt.project.service.DubboUserInterfaceInfoService;
@@ -32,8 +36,16 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
     private StringRedisTemplate stringRedisTemplate;
 
     @Resource
+    private InterfaceInfoService interfaceInfoService;
+
+    @Resource
     private UserInterfaceInfoMapper userInterfaceInfoMapper;
 
+    /**
+     * 检差 用户接口是否都存在
+     * @param userInterfaceInfo
+     * @param add
+     */
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add) {
         if (userInterfaceInfo == null) {
@@ -50,6 +62,12 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
         }
     }
 
+    /**
+     * 总请求次数 +1，剩余请求次数 - 1
+     * @param useId
+     * @param interfaceInfoId
+     * @return
+     */
     @Override
     public boolean invokeInterface(Long useId, Long interfaceInfoId) {
         UpdateWrapper<UserInterfaceInfo> wrapper = new UpdateWrapper<>();
@@ -100,6 +118,41 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
 
     public List<UserInterfaceInfoVO> getInterfaceInfoByUserId(long userId){
         return userInterfaceInfoMapper.getInterfaceInfoByUserId(userId);
+    }
+
+    @Override
+    public boolean application(ApplyCallTimesRequest applyCallTimesRequest, User loginUser) {
+        long interfaceId = applyCallTimesRequest.getInterfaceId();
+
+        InterfaceInfo interfaceInfo = interfaceInfoService.query().eq("id", interfaceId).one();
+
+        if(interfaceInfo == null || interfaceInfo.getStatus() == 0){
+            return false;
+        }
+
+        applyCallTimesRequest.getInterfaceId();
+        UserInterfaceInfo info = null;
+        try{
+            info = this.
+                    query().eq("interfaceInfoId", interfaceId).eq("userId", loginUser.getId()).one();
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
+        }
+        if(info == null){
+            info = new UserInterfaceInfo();
+            info.setUserId(loginUser.getId());
+            info.setInterfaceInfoId(interfaceId);
+            info.setTotalNum(0);
+            info.setInterfaceInfoId(applyCallTimesRequest.getInterfaceId());
+            info.setStatus(1);
+
+            return this.save(info);
+        }else{
+            return this.update().setSql("leftNum = leftNum + " + applyCallTimesRequest.getCount())
+                    .eq("interfaceInfoId", interfaceId).eq("userId", loginUser.getId())
+                    .update();
+        }
     }
 }
 

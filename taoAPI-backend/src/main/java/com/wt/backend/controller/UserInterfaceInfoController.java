@@ -3,6 +3,7 @@ package com.wt.backend.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wt.backend.annotation.AuthCheck;
+import com.wt.backend.common.ApplyCallTimesRequest;
 import com.wt.backend.service.api.UserInterfaceInfoService;
 import com.wt.backend.common.BaseResponse;
 import com.wt.backend.common.ErrorCode;
@@ -36,7 +37,6 @@ import java.util.List;
 @RequestMapping("/UserInterfaceInfo")
 @Slf4j
 public class UserInterfaceInfoController {
-
     @Resource
     private UserInterfaceInfoService userInterfaceInfoService;
 
@@ -46,11 +46,9 @@ public class UserInterfaceInfoController {
     @Resource
     private TaoAPIClient taoAPIClient;
 
-    // region 增删改查
 
     /**
      * 创建
-     *
      * @param UserInterfaceInfoAddRequest
      * @param request
      * @return
@@ -101,7 +99,6 @@ public class UserInterfaceInfoController {
 
     /**
      * 更新
-     *
      * @param UserInterfaceInfoUpdateRequest
      * @param request
      * @return
@@ -128,8 +125,32 @@ public class UserInterfaceInfoController {
         return ResultUtils.success(result);
     }
 
+
     /**
-     *
+     * 申请增加接口的请求次数
+     * @param applyCallTimesRequest
+     * @param request
+     * @return
+     */
+    @AuthCheck(mustRole = "ACX")
+    @PostMapping("/application")
+    public BaseResponse<String> applicationCallTimes(@RequestBody ApplyCallTimesRequest applyCallTimesRequest, HttpServletRequest request){
+        if(applyCallTimesRequest == null || applyCallTimesRequest.getInterfaceId() < 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        if(applyCallTimesRequest.getCount() > 500){
+            return ResultUtils.error(ErrorCode.OPERATION_ERROR,"请求次数过大");
+        }
+
+        User loginUser = userService.getLoginUser(request);
+
+        boolean application = userInterfaceInfoService.application(applyCallTimesRequest, loginUser);
+
+        return application?ResultUtils.success("申请成功"):ResultUtils.error(ErrorCode.OPERATION_ERROR);
+    }
+
+    /**
+     * 获取用户调用过的接口
      * @return
      */
     @GetMapping("/get")
@@ -179,7 +200,6 @@ public class UserInterfaceInfoController {
         BeanUtils.copyProperties(UserInterfaceInfoQueryRequest, UserInterfaceInfoQuery);
         long current = UserInterfaceInfoQueryRequest.getCurrent();
         long size = UserInterfaceInfoQueryRequest.getPageSize();
-//        System.out.println("=============================================" + current + " " + size);
         String sortField = UserInterfaceInfoQueryRequest.getSortField();
         String sortOrder = UserInterfaceInfoQueryRequest.getSortOrder();
         // 限制爬虫

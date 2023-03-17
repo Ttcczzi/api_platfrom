@@ -8,17 +8,11 @@ import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Mono;
 
 import java.net.ConnectException;
+import java.net.SocketException;
 import java.sql.SQLException;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
-
-    @ExceptionHandler(ConnectException.class)
-    public String connectExceptionHandler(ConnectException e){
-
-        log.error(e.getMessage());
-        return "服务器连接异常";
-    }
 }

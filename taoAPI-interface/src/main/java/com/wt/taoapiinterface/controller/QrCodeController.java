@@ -31,7 +31,7 @@ import java.util.ArrayList;
 @Slf4j
 public class QrCodeController {
 
-    String path = "/home/jars/taoAPI/QrCodeCache/";
+    String path = "./QrCodeCache/";
     //String path = "X:\\QrCodeCache\\";
 
     @GetMapping("/")
@@ -50,7 +50,7 @@ public class QrCodeController {
         if(!imgFile.exists()) {
             imgFile.createNewFile();
         }
-
+        System.out.println(imgFile.getAbsolutePath());
         log.info(imgFile.getAbsolutePath());
 
         imgFile.setWritable(true, false);

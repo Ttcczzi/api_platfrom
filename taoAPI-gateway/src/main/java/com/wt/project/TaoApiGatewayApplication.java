@@ -5,11 +5,14 @@ import com.wt.project.service.DubboDemoService;
 import com.wt.project.service.DubboInterfaceInfoService;
 import com.wt.project.service.DubboUserInterfaceInfoService;
 import com.wt.project.service.DubboUserService;
+import com.wt.project.threadpool.ThreadPool;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+
+import javax.annotation.PreDestroy;
 
 @SpringBootApplication
 @EnableDubbo
@@ -37,4 +40,8 @@ public class TaoApiGatewayApplication {
 //        System.out.println("result2: " + sekByAckAndUname);
     }
 
+    @PreDestroy
+    public void exit(){
+        ThreadPool.executor.shutdown();
+    }
 }

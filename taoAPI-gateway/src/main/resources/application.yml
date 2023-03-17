@@ -36,6 +36,7 @@ spring:
 dubbo:
   application:
     name: taoAPI-gateway
+    registerConsumer: false
   protocol:
     name: dubbo
     port: -1
