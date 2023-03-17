@@ -42,6 +42,7 @@ public class TaoAPIClient {
                 .addHeaders(getHeaderMap(requestParams.toString()))
                 .addHeaders(request.getRequestHeaders())
                 .execute();
+
         return getResult(response);
     }
 
@@ -54,6 +55,7 @@ public class TaoAPIClient {
                 .addHeaders(getHeaderMap(requestParams.toString()))
                 .addHeaders(request.getRequestHeaders())
                 .execute();
+
         return getResult(response);
     }
 
@@ -66,16 +68,20 @@ public class TaoAPIClient {
                 .addHeaders(request.getRequestHeaders())
                 .body(requestParams)
                 .execute();
+
         return getResult(httpResponse);
     }
 
     public CommonResult getResult(HttpResponse response){
+        //若结果状态不为200
         if(response.getStatus() != HttpStatus.HTTP_OK){
             String body = response.body();
+
             CommonResult result = new CommonResult();
             result.setMessage(body);
             return result;
         }
+
         String body = response.body();
         CommonResult result = JSONUtil.toBean(body, CommonResult.class);
         return result;

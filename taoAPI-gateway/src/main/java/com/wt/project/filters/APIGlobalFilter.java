@@ -138,6 +138,9 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     }
 
     public Mono<Void> handlerResponse(ServerWebExchange exchange, GatewayFilterChain chain, Long interfaceId, Long uesrId) {
+        Map<String, Object> attributes = exchange.getAttributes();
+        attributes.put("interfaceId", interfaceId);
+
         try {
             ServerHttpResponse originalResponse = exchange.getResponse();
             DataBufferFactory bufferFactory = originalResponse.bufferFactory();
@@ -164,8 +167,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                             .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
                                 }else{
                                     log.error("服务端发生异常，状态码为：{}", resStatus);
-
-                                    content =  remoteSystemErrorHandler(interfaceId);
+                                    content =  ErrorInterface.remoteSystemErrorHandler(interfaceId);
 
                                     return bufferFactory.wrap(content);
                                 }
@@ -197,23 +199,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         }
     }
 
-    public byte[] remoteSystemErrorHandler(long interfaceId){
-        int count = ErrorInterface.getErrorNums(interfaceId);
-        ErrorInterface.addErrorNums(interfaceId);
-        //若失败次数连续超过 10，强制下线
-        if(count >= 100){
-            ThreadPool.executor.submit(() -> {
-                TaoApiGatewayApplication.application.dubboInterfaceInfoService.offline(interfaceId);
-                ErrorInterface.clearErrorNums(interfaceId);
-            });
-        }
-        CommonResult commonResult = new CommonResult();
 
-        String msg = "服务端发生异常，请稍后再试";
-        commonResult.setMessage(msg);
-
-        return JSONUtil.toJsonStr(commonResult).getBytes(StandardCharsets.UTF_8);
-    }
 
     @Override
     public int getOrder() {

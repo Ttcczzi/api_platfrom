@@ -1,5 +1,6 @@
 package com.wt.project.exception;
 
+import com.wt.response.CommonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,5 +15,11 @@ import java.sql.SQLException;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+    @ExceptionHandler(InterfaceConnectionException.class)
+    public CommonResult ConnectExceptionHandler(InterfaceConnectionException e){
+        CommonResult commonResult = new CommonResult();
+        commonResult.setMessage(e.getMessage());
 
+        return commonResult;
+    }
 }
