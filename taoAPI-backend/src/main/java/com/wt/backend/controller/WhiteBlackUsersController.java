@@ -2,16 +2,17 @@ package com.wt.backend.controller;
 
 import com.wt.backend.common.BaseResponse;
 import com.wt.backend.common.ErrorCode;
-import com.wt.backend.common.GateWayConstant;
+import com.wt.backend.common.GateWayParams;
 import com.wt.backend.common.ResultUtils;
 import com.wt.constant.RedisConstant;
-import com.wt.mysqlmodel.model.dto.PageRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,12 +31,15 @@ public class WhiteBlackUsersController {
 
     @GetMapping("/add")
     public BaseResponse<String> add(@RequestParam  String host){
+
+        //todo 校验 IP地址
+
         Long add = stringRedisTemplate.opsForSet().add(RedisConstant.CACE_WB_USERS, host);
         if(add <= 0){
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"该地址可能已经存在");
         }
 
-        String res =  restTemplate.getForObject(GateWayConstant.GATEWAYIP, String.class);
+        String res =  res = restTemplate.getForObject(GateWayParams.gatewayAdress + GateWayParams.reloadPath, String.class);
         return ResultUtils.success(res);
     }
 
@@ -46,9 +50,11 @@ public class WhiteBlackUsersController {
             return ResultUtils.error(ErrorCode.PARAMS_ERROR,"该地址可能不存在");
         }
 
-        String res =  restTemplate.getForObject(GateWayConstant.GATEWAYIP, String.class);
+        String res =  res = restTemplate.getForObject(GateWayParams.gatewayAdress + GateWayParams.reloadPath, String.class);
         return ResultUtils.success(res);
     }
+
+
 
     @GetMapping("/queryAllWB")
     public BaseResponse<Set<String>> queryAll(){

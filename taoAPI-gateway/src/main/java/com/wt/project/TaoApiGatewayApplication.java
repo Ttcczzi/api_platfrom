@@ -1,7 +1,6 @@
 package com.wt.project;
 
 
-import com.wt.project.service.DubboDemoService;
 import com.wt.project.service.DubboInterfaceInfoService;
 import com.wt.project.service.DubboUserInterfaceInfoService;
 import com.wt.project.service.DubboUserService;
@@ -18,8 +17,6 @@ import javax.annotation.PreDestroy;
 @EnableDubbo
 public class TaoApiGatewayApplication {
 
-    @DubboReference
-    public DubboDemoService demoService;
     @DubboReference
     public DubboUserService dubboUserService;
 

@@ -1,9 +1,6 @@
 package com.wt.mysqlmodel.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -65,11 +62,13 @@ public class InterfaceInfo implements Serializable {
     /**
      * 
      */
+    @TableField(fill = FieldFill.INSERT)
     protected Date createTime;
 
     /**
      * 
      */
+    @TableField(fill = FieldFill.UPDATE)
     protected Date updateTime;
 
     /**

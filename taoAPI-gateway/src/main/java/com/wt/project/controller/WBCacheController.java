@@ -22,6 +22,7 @@ public class WBCacheController {
 
     @GetMapping("/reload")
     public String reload(){
+        log.info("收到reload的请求");
         filter.loadWBList();
         Set<String> wbSet = filter.getWBSet();
         StringBuilder info = new StringBuilder("黑白名单已经重新加载: ");

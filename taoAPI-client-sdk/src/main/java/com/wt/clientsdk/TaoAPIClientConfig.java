@@ -22,6 +22,6 @@ public class TaoAPIClientConfig {
     private Long uesrId;
     @Bean
     public TaoAPIClient taoAPIClient(){
-        return new TaoAPIClient(accessKey, secretKey,uesrId);
+        return new TaoAPIClient(accessKey, secretKey, uesrId);
     }
 }

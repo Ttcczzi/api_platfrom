@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 用户服务测试
@@ -31,10 +33,10 @@ class UserServiceTest {
 
 
     @Test
-    void tests(){
+    void tests() {
         CommonRequest request = new CommonRequest();
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("te","te");
+        hashMap.put("te", "te");
         request.setRequestParams(hashMap);
         request.setUrl("http://localhost:8090/api/t/test");
         System.out.println(taoAPIClient.get(request));
