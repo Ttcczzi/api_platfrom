@@ -11,6 +11,8 @@
     <file url="file://$PROJECT_DIR$/taoAPI-client-sdk/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/taoAPI-gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/taoAPI-interface/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/taoAPI-log/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/taoAPI-log/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/test/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/../taoAPI-QRCode-sdk/src/main/java" charset="UTF-8" />
   </component>

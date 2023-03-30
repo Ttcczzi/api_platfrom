@@ -52,6 +52,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     private Set<String> WBSet;
 
     public Set<String> getWBSet() {
+        loadWBList();
         return WBSet;
     }
 
@@ -64,7 +65,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     public void loadWBList(){
         WBSet =
                 stringRedisTemplate.opsForSet().members(RedisConstant.CACE_WB_USERS);
-        log.info("黑白名单信息：{}", WBSet);
+        log.info("黑白名单信息：{} {}",RedisConstant.CACE_WB_USERS, WBSet);
     }
 
     @Override
@@ -119,6 +120,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
         if(leftNum <= 0){
             if(leftNum == -100){
                 //todo sql异常
+                response.setStatusCode(HttpStatus.BAD_REQUEST);
                 return handleError(response,"系统异常");
             }
             log.error("用户调用次数已用完 userId:{} interfaceId:{}",userId, interfaceId);
@@ -131,6 +133,7 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
     }
 
     public Mono<Void> handleError(ServerHttpResponse response, String msg){
+
         byte[] bytes = msg.toString().getBytes(StandardCharsets.UTF_8);
         DataBuffer buffer = response.bufferFactory().wrap(bytes);
         response.getHeaders().add("Content-Type","application/text;charset=UTF-8");
@@ -166,19 +169,10 @@ public class APIGlobalFilter implements GlobalFilter, Ordered {
                                     TaoApiGatewayApplication
                                             .application.dubboUserInterfaceInfoService.invokeInterface(uesrId,interfaceId);
                                 }else{
-                                    log.error("服务端发生异常，状态码为：{}", resStatus);
+                                    log.error("接口端发生异常，状态码为：{}", resStatus);
                                     content =  ErrorInterface.remoteSystemErrorHandler(interfaceId);
 
                                     return bufferFactory.wrap(content);
-                                }
-
-                                try{
-                                    CommonResult commonResult = JSONUtil.toBean(data, CommonResult.class);
-                                }catch (Exception e){
-                                    CommonResult commonResult = new CommonResult();
-                                    commonResult.setCode(200);
-                                    commonResult.setData(data);
-                                    content = JSONUtil.toJsonStr(commonResult).getBytes(StandardCharsets.UTF_8);
                                 }
 
                                 log.info("<--- {} {},",data,resStatus);

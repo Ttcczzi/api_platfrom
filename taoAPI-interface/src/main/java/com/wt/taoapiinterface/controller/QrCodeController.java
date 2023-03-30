@@ -50,7 +50,7 @@ public class QrCodeController {
         if(!imgFile.exists()) {
             imgFile.createNewFile();
         }
-        System.out.println(imgFile.getAbsolutePath());
+
         log.info(imgFile.getAbsolutePath());
 
         imgFile.setWritable(true, false);

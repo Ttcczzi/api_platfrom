@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wt.backend.mapper.RouteMapper">
+
+    <resultMap id="routeDefination" type="com.wt.mysqlmodel.model.vo.DBRouteDefination">
+        <result property="routeId" column="routeId"></result>
+        <association property="routes" resultMap="route"></association>
+    </resultMap>
+    <resultMap id="route" type="com.wt.mysqlmodel.model.entity.Route">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="routeid" column="routeId" jdbcType="BIGINT"/>
+        <result property="predicate" column="predicate" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="targethost" column="targetHost" jdbcType="VARCHAR"/>
+        <result property="isdelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        ,routeId,predicate,
+        content,targetHost,isDelete
+    </sql>
+
+    <select id="queryAllByRoutId" resultMap="routeDefination">
+        select routeIds.routeId, r.predicate, r.content, r.targetHost
+        from route r,
+             (select distinct routeId from route) routeIds
+        where r.routeId = routeIds.routeId and r.isDelete = 0
+    </select>
+</mapper>

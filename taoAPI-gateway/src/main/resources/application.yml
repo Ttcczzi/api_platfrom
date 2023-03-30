@@ -3,18 +3,19 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sh-cdb-mf5lif48.sql.tencentcdb.com:63782/taoapi?useSSL=false&serverTimezone=UTC
+#    url: jdbc:mysql://sh-cdb-mf5lif48.sql.tencentcdb.com:63782/taoapi?useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://182.43.17.29:3306/taoapi?useSSL=false&serverTimezone=UTC
     username: root
-    password: 2210084657wt!
+    password: 2210084657wt
   main:
     web-application-type: reactive
   application:
     name: taoAPI-gateway
   redis:
-    host: tapredis111.redis.rds.aliyuncs.com
+    host: 182.43.17.29
     port: 6379
-    password: 2210084657wt!
-    username: tao
+#    password: 2210084657wt!
+#    username: tao
 #  redis:
 #    cluster:
 #      nodes:

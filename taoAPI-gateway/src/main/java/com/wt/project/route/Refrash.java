@@ -23,24 +23,24 @@ public class Refrash {
     @Autowired
     private MysqlRouteDefinitionRepository repository;
 
-    public void addCache(String predict, String content, String host) {
-        ArrayList<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
-        try {
-            PredicateDefinition predicateDefinition = new PredicateDefinition();
-            predicateDefinition.setName(predict);
-            predicateDefinition.addArg("_genkey_i", content);
-
-            RouteDefinition routeDefinition = new RouteDefinition();
-            UUID uuid = UUID.randomUUID();
-            routeDefinition.setId(uuid.toString());
-            routeDefinition.setUri(new URI(host));
-            routeDefinition.setPredicates(predicateDefinitionList);
-
-            repository.addCache(routeDefinition);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void addCache(String predict, String content, String host) {
+//        ArrayList<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
+//        try {
+//            PredicateDefinition predicateDefinition = new PredicateDefinition();
+//            predicateDefinition.setName(predict);
+//            predicateDefinition.addArg("_genkey_i", content);
+//
+//            RouteDefinition routeDefinition = new RouteDefinition();
+//            UUID uuid = UUID.randomUUID();
+//            routeDefinition.setId(uuid.toString());
+//            routeDefinition.setUri(new URI(host));
+//            routeDefinition.setPredicates(predicateDefinitionList);
+//
+//            repository.addCache(routeDefinition);
+//        } catch (URISyntaxException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void refrash(){
         repository.loadCache();

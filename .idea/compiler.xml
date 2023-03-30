@@ -11,6 +11,7 @@
         <module name="taoAPI-QRCode-sdk" />
         <module name="DBModel" />
         <module name="test" />
+        <module name="taoAPI-log" />
         <module name="taoAPI-interface" />
         <module name="taoAPI-backend" />
         <module name="taoAPI-gateway" />
@@ -26,6 +27,7 @@
       <module name="taoAPI-client-sdk" target="1.8" />
       <module name="taoAPI-gateway" target="1.8" />
       <module name="taoAPI-interface" target="1.8" />
+      <module name="taoAPI-log" target="1.8" />
       <module name="taoAPI-QRCode-sdk" target="1.8" />
       <module name="test" target="1.8" />
     </bytecodeTargetLevel>
