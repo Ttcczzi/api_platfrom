@@ -14,7 +14,7 @@ spring:
   redis:
     host: 182.43.17.29
     port: 6379
-#    password: 2210084657wt!
+    password: 2210084657wt!
 #    username: tao
 #  redis:
 #    cluster:
